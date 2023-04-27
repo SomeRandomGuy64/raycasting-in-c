@@ -6,6 +6,7 @@
 #define PI 3.1415926535
 #define P2 PI/2
 #define P3 3 * PI / 2
+#define DR 0.0174533 //1 degree in radians
 
 float px, py, pdx, pdy, pa; //player position
 
@@ -75,10 +76,20 @@ void drawRays2D()
 {
     int r, mx, my, mp, dof;
     float rx, ry, ra, xo, yo;
+    ra = pa - DR * 30;
 
-    ra = pa;
+    if (ra < 0)
+    {
+        ra += 2 * PI;
+    }
+    if (ra > 2 * PI)
+    {
+        ra -= 2 * PI;
+    }
+    
+    
 
-    for (r = 0; r < 1; r++)
+    for (r = 0; r < 60; r++)
     {
         // // Check for the horizontal lines
         dof = 0;
@@ -189,6 +200,17 @@ void drawRays2D()
         glVertex2i(px, py);
         glVertex2i(rx, ry);
         glEnd();
+
+        ra += DR;
+
+    if (ra < 0)
+    {
+        ra += 2 * PI;
+    }
+    if (ra > 2* PI)
+    {
+        ra -= 2*PI;
+    }
     }
 }
 
