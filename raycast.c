@@ -75,7 +75,7 @@ float dist(float ax, float ay, float bx, float by, float ang)
 void drawRays2D()
 {
     int r, mx, my, mp, dof;
-    float rx, ry, ra, xo, yo;
+    float rx, ry, ra, xo, yo, disT;
     ra = pa - DR * 30;
 
     if (ra < 0)
@@ -185,11 +185,13 @@ void drawRays2D()
         {
             rx = vx;
             ry = vy;
+            disT = disV;
         }
         if (disH < disV)
         {
             rx = hx;
             ry = hy;
+            disT = disH;
         }
         
         
@@ -201,16 +203,48 @@ void drawRays2D()
         glVertex2i(rx, ry);
         glEnd();
 
+        //3D rendering time lets gooooooo
+        //fix fisheye effect
+        float ca = pa - ra;
+
+        if (ca < 0)
+        {
+            ca += 2 * PI;
+        }
+
+        if (ca > 2 * PI)
+        {
+            ca -= 2 * PI;
+        }
+        
+        disT = disT * cos(ca);
+
+        //line height
+        float lineH = (mapS * 320) / disT;
+
+        if (lineH > 320)
+        {
+            lineH = 320;
+        }
+        
+        //line offset
+        float lineO = 160 - lineH / 2;
+        glLineWidth(8);
+        glBegin(GL_LINES);
+        glVertex2i(r * 8 + 530, lineO);
+        glVertex2i(r * 8 + 530, lineH + lineO);
+        glEnd();
+
         ra += DR;
 
-    if (ra < 0)
-    {
-        ra += 2 * PI;
-    }
-    if (ra > 2* PI)
-    {
-        ra -= 2*PI;
-    }
+        if (ra < 0)
+        {
+            ra += 2 * PI;
+        }
+        if (ra > 2* PI)
+        {
+            ra -= 2*PI;
+        }
     }
 }
 
