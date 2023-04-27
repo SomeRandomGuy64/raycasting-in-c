@@ -3,8 +3,11 @@
 #include <GL/glut.h>
 #include <math.h>
 
-float px, py; //player position
+#define PI 3.1415926535
 
+float px, py, pdx, pdy, pa; //player position
+
+int playerSpeed = 5;
 int mapX = 8, mapY = 8, mapS = 64;
 int map[] = 
 {
@@ -52,6 +55,12 @@ void drawPlayer()
     glBegin(GL_POINTS);
     glVertex2i(px, py);
     glEnd();
+
+    glLineWidth(3);
+    glBegin(GL_LINES);
+    glVertex2i(px, py);
+    glVertex2i(px + pdx * 5, py + pdy * 5);
+    glEnd();
 }
 
 void display()
@@ -64,11 +73,31 @@ void display()
 
 void buttons(unsigned char key, int x, int y)
 {
-    int playerSpeed = 10;
-    if (key == 'a') { px -= playerSpeed; }
-    if (key == 'd') { px += playerSpeed; }
-    if (key == 'w') { py -= playerSpeed; }
-    if (key == 's') { py += playerSpeed; }
+    //rotate left
+    if (key == 'a') 
+    { 
+        pa -= 0.1;
+        if (pa < 0)
+        {
+            pa += 2* PI;   
+        }
+        pdx = cos(pa) * playerSpeed;
+        pdy = sin(pa) * playerSpeed;
+    }
+    // rotate right
+    if (key == 'd') 
+    { 
+        pa += 0.1;
+        if (pa > 2 * PI)
+        {
+            pa -= 2* PI;   
+        }
+        pdx = cos(pa) * playerSpeed;
+        pdy = sin(pa) * playerSpeed;
+    }
+    //move forwards and backwards
+    if (key == 'w') { px += pdx; py += pdy; }
+    if (key == 's') { px -= pdx; py -= pdy; }
 
     glutPostRedisplay();
 }
@@ -81,6 +110,9 @@ void init()
     //initialise player position
     px = 300;
     py = 300;
+
+    pdx = cos(pa) * playerSpeed;
+    pdy = sin(pa) * playerSpeed;
 }
 
 int main(int argc, char* argv[])
