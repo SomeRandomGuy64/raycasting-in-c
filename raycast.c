@@ -4,6 +4,8 @@
 #include <math.h>
 
 #define PI 3.1415926535
+#define P2 PI/2
+#define P3 3 * PI / 2
 
 float px, py, pdx, pdy, pa; //player position
 
@@ -72,20 +74,67 @@ void drawRays3D()
 
     for (r = 0; r < 1; r++)
     {
-        // Check for the horizontal lines
+        // // Check for the horizontal lines
+        // dof = 0;
+        // float aTan =-1/tan(ra);
+        // //looking up
+        // if (ra > PI)
+        // {
+        //     ry = (((int) py >> 6 ) << 6) - 0.0001; rx = (py - ry) * aTan + px; yo = - 64; xo = -yo * aTan;
+        // }
+        // //looking down
+        // if (ra < PI)
+        // {
+        //     ry = (((int) py >> 6 ) << 6) + 64; rx = (py - ry) * aTan + px; yo = 64; xo = -yo * aTan;
+        // }
+        // //looking straigh left or right
+        // if (ra == 0 || ra == PI)
+        // {
+        //     rx = px;
+        //     ry = py;
+        //     dof = 8;
+        // }
+
+        // while (dof < 8)
+        // {
+        //     mx = (int) (rx) >> 6;
+        //     my = (int) (ry) >> 6;
+        //     mp = my * mapX + mx;
+
+        //     //hit wall
+        //     if (mp < mapX * mapY && map[mp] == 1)
+        //     {
+        //         dof = 8;
+        //     }
+        //     //next line
+        //     else
+        //     {
+        //         rx += xo;
+        //         ry += yo;
+        //         dof += 1;
+        //     }
+        // }
+        // glColor3f(0, 1, 0);
+        // glLineWidth(1);
+        // glBegin(GL_LINES);
+        // glVertex2i(px, py);
+        // glVertex2i(rx, ry);
+        // glEnd();
+
+        // Check for the vertical lines
         dof = 0;
-        float aTan =-1/tan(ra);
-        //looking up
-        if (ra > PI)
+        float nTan =-tan(ra);
+        //looking left
+        if (ra > P2 && ra < P3)
         {
-            ry = (((int) py >> 6 ) << 6) - 0.0001; rx = (py - ry) * aTan + px; yo = - 64; xo = -yo * aTan;
+            rx = (((int) px >> 6 ) << 6) - 0.0001; ry = (px - rx) * nTan + py; xo = - 64; yo = -xo * nTan;
         }
-        //looking down
-        if (ra < PI)
+        //looking right
+        if (ra < P2 || ra > P3)
         {
-            ry = (((int) py >> 6 ) << 6) + 64; rx = (py - ry) * aTan + px; yo = 64; xo = -yo * aTan;
+            rx = (((int) px >> 6 ) << 6) + 64; ry = (px - rx) * nTan + py; xo = 64; yo = -xo * nTan;
         }
-        //looking straigh left or right
+        //looking straight up or down
         if (ra == 0 || ra == PI)
         {
             rx = px;
@@ -112,7 +161,7 @@ void drawRays3D()
                 dof += 1;
             }
         }
-        glColor3f(0, 1, 0);
+        glColor3f(1, 0, 0);
         glLineWidth(1);
         glBegin(GL_LINES);
         glVertex2i(px, py);
