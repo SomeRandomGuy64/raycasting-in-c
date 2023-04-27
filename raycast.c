@@ -65,7 +65,13 @@ void drawPlayer()
     glEnd();
 }
 
-void drawRays3D()
+//some pythagoras action here
+float dist(float ax, float ay, float bx, float by, float ang)
+{
+    return ( sqrt((bx - ax) * (bx - ax) + (by - ay) * (by - ay)));
+}
+
+void drawRays2D()
 {
     int r, mx, my, mp, dof;
     float rx, ry, ra, xo, yo;
@@ -75,55 +81,54 @@ void drawRays3D()
     for (r = 0; r < 1; r++)
     {
         // // Check for the horizontal lines
-        // dof = 0;
-        // float aTan =-1/tan(ra);
-        // //looking up
-        // if (ra > PI)
-        // {
-        //     ry = (((int) py >> 6 ) << 6) - 0.0001; rx = (py - ry) * aTan + px; yo = - 64; xo = -yo * aTan;
-        // }
-        // //looking down
-        // if (ra < PI)
-        // {
-        //     ry = (((int) py >> 6 ) << 6) + 64; rx = (py - ry) * aTan + px; yo = 64; xo = -yo * aTan;
-        // }
-        // //looking straigh left or right
-        // if (ra == 0 || ra == PI)
-        // {
-        //     rx = px;
-        //     ry = py;
-        //     dof = 8;
-        // }
+        dof = 0;
+        float disH = 99999, hx = px, hy = py;
+        float aTan =-1/tan(ra);
+        //looking up
+        if (ra > PI)
+        {
+            ry = (((int) py >> 6 ) << 6) - 0.0001; rx = (py - ry) * aTan + px; yo = - 64; xo = -yo * aTan;
+        }
+        //looking down
+        if (ra < PI)
+        {
+            ry = (((int) py >> 6 ) << 6) + 64; rx = (py - ry) * aTan + px; yo = 64; xo = -yo * aTan;
+        }
+        //looking straigh left or right
+        if (ra == 0 || ra == PI)
+        {
+            rx = px;
+            ry = py;
+            dof = 8;
+        }
 
-        // while (dof < 8)
-        // {
-        //     mx = (int) (rx) >> 6;
-        //     my = (int) (ry) >> 6;
-        //     mp = my * mapX + mx;
+        while (dof < 8)
+        {
+            mx = (int) (rx) >> 6;
+            my = (int) (ry) >> 6;
+            mp = my * mapX + mx;
 
-        //     //hit wall
-        //     if (mp < mapX * mapY && map[mp] == 1)
-        //     {
-        //         dof = 8;
-        //     }
-        //     //next line
-        //     else
-        //     {
-        //         rx += xo;
-        //         ry += yo;
-        //         dof += 1;
-        //     }
-        // }
-        // glColor3f(0, 1, 0);
-        // glLineWidth(1);
-        // glBegin(GL_LINES);
-        // glVertex2i(px, py);
-        // glVertex2i(rx, ry);
-        // glEnd();
+            //hit wall
+            if (mp > 0 && mp < mapX * mapY && map[mp] == 1)
+            {
+                hx = rx;
+                hy = ry;
+                disH = dist(px, py, hx, hy, ra);
+                dof = 8;
+            }
+            //next line
+            else
+            {
+                rx += xo;
+                ry += yo;
+                dof += 1;
+            }
+        }
 
         // Check for the vertical lines
         dof = 0;
         float nTan =-tan(ra);
+        float disV = 99999, vx = px, vy = py;
         //looking left
         if (ra > P2 && ra < P3)
         {
@@ -149,8 +154,11 @@ void drawRays3D()
             mp = my * mapX + mx;
 
             //hit wall
-            if (mp < mapX * mapY && map[mp] == 1)
+            if (mp > 0 && mp < mapX * mapY && map[mp] == 1)
             {
+                vx = rx;
+                vy = ry;
+                disV = dist(px, py, vx, vy, ra);
                 dof = 8;
             }
             //next line
@@ -161,8 +169,22 @@ void drawRays3D()
                 dof += 1;
             }
         }
+
+        if (disV < disH)
+        {
+            rx = vx;
+            ry = vy;
+        }
+        if (disH < disV)
+        {
+            rx = hx;
+            ry = hy;
+        }
+        
+        
+
         glColor3f(1, 0, 0);
-        glLineWidth(1);
+        glLineWidth(3);
         glBegin(GL_LINES);
         glVertex2i(px, py);
         glVertex2i(rx, ry);
@@ -174,8 +196,8 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawMap2D();
+    drawRays2D();
     drawPlayer();
-    drawRays3D();
     glutSwapBuffers();
 }
 
